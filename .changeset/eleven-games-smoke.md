@@ -1,5 +1,5 @@
 ---
-"ts-template": major
+"express-rdf-request": major
 ---
 
 First public version
