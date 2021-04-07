@@ -20,6 +20,22 @@ app.use(async function echo(req, res) {
 })
 ```
 
+Alternatively, the function can be attached inside a handler to ensure that they are available.
+
+```js
+import { attach } from 'express-rdf-request'
+
+app.use(async function echo(req, res) {
+  await attach(req, res)
+  
+  // get resource parsed from body
+  const resource = await req.resource()
+  
+  // send it back
+  res.resource(resource)
+})
+```
+
 ## What it does
 
 Uses [@rdfjs/express-handler](https://npm.im/@rdfjs/express-handler) to parse the incoming request as RDF and to serialize responses.
@@ -30,7 +46,7 @@ Finally, the node exactly matching the requested URI will be returned as Graph P
 
 ## Configuration
 
-All configuration is optional.
+All configuration is optional and also can be used with `attach`.
 
 ```typescript
 app.use(resource({

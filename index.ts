@@ -37,32 +37,38 @@ interface Options {
   factory?: DataFactory & DatasetCoreFactory
 }
 
-export const resource = ({ getTerm = defaultTerm, factory = $rdf }: Options = {}): express.RequestHandler => asyncMiddleware(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export async function attach(req: express.Request, res: express.Response, { getTerm = defaultTerm, factory = $rdf }: Options = {}): Promise<void> {
   await (rdfHandler as any).attach(req, res, {
     baseIriFromRequest: true,
     factory,
   })
 
-  req.resource = async () => {
-    const term = getTerm(req)
-    if (!term) {
-      throw new Error('Could not determine request term.')
+  if (!req.resource) {
+    req.resource = async () => {
+      const term = getTerm(req)
+      if (!term) {
+        throw new Error('Could not determine request term.')
+      }
+
+      const dataset = factory.dataset()
+
+      for (const quad of await req.dataset()) {
+        const { predicate, graph } = quad
+        const subject = quad.subject.termType === 'NamedNode' && isRelativeUrl(quad.subject.value) ? term : quad.subject
+        const object = quad.object.termType === 'NamedNode' && isRelativeUrl(quad.object.value) ? term : quad.object
+
+        dataset.add(factory.quad(subject, predicate, object, graph))
+      }
+
+      return clownface({ dataset }).node(term)
     }
 
-    const dataset = factory.dataset()
-
-    for (const quad of await req.dataset()) {
-      const { predicate, graph } = quad
-      const subject = quad.subject.termType === 'NamedNode' && isRelativeUrl(quad.subject.value) ? term : quad.subject
-      const object = quad.object.termType === 'NamedNode' && isRelativeUrl(quad.object.value) ? term : quad.object
-
-      dataset.add(factory.quad(subject, predicate, object, graph))
-    }
-
-    return clownface({ dataset }).node(term)
+    res.resource = (pointer: AnyPointer) => res.dataset(pointer.dataset)
   }
+}
 
-  res.resource = (pointer: AnyPointer) => res.dataset(pointer.dataset)
+export const resource = (options?: Options): express.RequestHandler => asyncMiddleware(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  await attach(req, res, options)
 
   next()
 })

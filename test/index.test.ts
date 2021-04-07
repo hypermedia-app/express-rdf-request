@@ -5,7 +5,7 @@ import { foaf, rdf, schema } from '@tpluscode/rdf-ns-builders'
 import { turtle } from '@tpluscode/rdf-string'
 import asyncMiddleware from 'middleware-async'
 import { expect } from 'chai'
-import { resource } from '..'
+import { attach, resource } from '..'
 
 describe('middleware', () => {
   let app: Express
@@ -82,6 +82,26 @@ describe('middleware', () => {
         foaf.Agent.value,
         schema.Person.value,
       ])
+    })
+
+    it('can be attached on demand', async () => {
+      app.use(asyncMiddleware(async (req, res) => {
+        await attach(req, res)
+
+        res.send({
+          reqResource: !!req.resource,
+          resResource: !!res.resource,
+        })
+      }))
+
+      // when
+      const response = request(app).get('/foo/bar/baz')
+
+      // then
+      await response.expect({
+        reqResource: true,
+        resResource: true,
+      })
     })
   })
 })
