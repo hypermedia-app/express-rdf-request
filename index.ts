@@ -6,6 +6,7 @@ import * as rdfHandler from '@rdfjs/express-handler'
 import asyncMiddleware from 'middleware-async'
 import * as absoluteUrl from 'absolute-url'
 import isRelativeUrl from 'is-relative-url'
+import once from 'once'
 
 declare module 'express-serve-static-core' {
   export interface Request {
@@ -44,7 +45,7 @@ export async function attach(req: express.Request, res: express.Response, { getT
   })
 
   if (!req.resource) {
-    req.resource = async () => {
+    req.resource = once(async () => {
       const term = getTerm(req)
       if (!term) {
         throw new Error('Could not determine request term.')
@@ -61,7 +62,7 @@ export async function attach(req: express.Request, res: express.Response, { getT
       }
 
       return clownface({ dataset }).node(term)
-    }
+    })
 
     res.resource = (pointer: AnyPointer) => res.dataset(pointer.dataset)
   }
