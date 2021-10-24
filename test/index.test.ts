@@ -103,5 +103,26 @@ describe('middleware', () => {
         resResource: true,
       })
     })
+
+    it('returns same object when called multiple times', async () => {
+      // given
+      app.use(resource())
+      app.use(asyncMiddleware(async (req, res) => {
+        const first = await req.resource()
+        const second = await req.resource()
+
+        res.send(Object.is(first, second))
+      }))
+
+      // when
+      const response = await request(app)
+        .post('/foo/bar/baz')
+        .send(turtle`<http://example.com/foo/bar/baz> a ${schema.Person}, ${foaf.Agent} .`.toString())
+        .set('host', 'example.com')
+        .set('content-type', 'text/turtle')
+
+      // then
+      expect(response.body).to.eq(true)
+    })
   })
 })
