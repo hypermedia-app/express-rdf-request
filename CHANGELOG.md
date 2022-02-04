@@ -1,5 +1,11 @@
 # express-rdf-request
 
+## 1.1.2
+
+### Patch Changes
+
+- 670edb2: fix: [DEP0128] DeprecationWarning: Invalid 'main' field
+
 ## 1.1.1
 
 ### Patch Changes
