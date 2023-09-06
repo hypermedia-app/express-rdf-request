@@ -8,6 +8,7 @@ import isRelativeUrl from 'is-relative-url'
 import once from 'once'
 import type { Environment } from '@rdfjs/environment/Environment'
 import type ClownfaceFactory from 'clownface/Factory'
+import type { NamespaceFactory } from '@rdfjs/namespace/Factory'
 import rdf from './lib/env.js'
 
 declare module 'express-serve-static-core' {
@@ -25,7 +26,7 @@ declare module 'rdf-js' {
   interface Stream extends AsyncIterable<import('rdf-js').Quad> {}
 }
 
-type Env = Environment<DataFactory | DatasetCoreFactory | ClownfaceFactory>
+type Env = Environment<DataFactory | DatasetCoreFactory | ClownfaceFactory | NamespaceFactory>
 
 interface GetTerm {
   ($rdf: Env, req: express.Request): NamedNode
