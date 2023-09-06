@@ -8,6 +8,7 @@ import isRelativeUrl from 'is-relative-url'
 import once from 'once'
 import type { Environment } from '@rdfjs/environment/Environment'
 import type ClownfaceFactory from 'clownface/Factory'
+import rdf from './lib/env.js'
 
 declare module 'express-serve-static-core' {
   export interface Request {
@@ -38,10 +39,10 @@ function defaultTerm($rdf: Env, req: express.Request) {
 
 interface Options {
   getTerm?: GetTerm
-  factory: Env
+  factory?: Env
 }
 
-export async function attach(req: express.Request, res: express.Response, { getTerm = defaultTerm, factory }: Options): Promise<void> {
+export async function attach(req: express.Request, res: express.Response, { getTerm = defaultTerm, factory = rdf }: Options = {}): Promise<void> {
   await rdfHandler.attach(req, res, {
     baseIriFromRequest: true,
     factory,
@@ -71,7 +72,7 @@ export async function attach(req: express.Request, res: express.Response, { getT
   }
 }
 
-export const resource = (options: Options): express.RequestHandler => asyncMiddleware(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export const resource = (options?: Options): express.RequestHandler => asyncMiddleware(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   await attach(req, res, options)
 
   next()
