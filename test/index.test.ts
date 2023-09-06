@@ -1,4 +1,3 @@
-import { describe, it } from 'mocha'
 import express, { Express } from 'express'
 import request from 'supertest'
 import { foaf, rdf, schema } from '@tpluscode/rdf-ns-builders'
