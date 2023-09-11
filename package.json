@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "@rdfjs/environment": "^0.1.2",
-    "@rdfjs/express-handler": "^1.2.2",
+    "@rdfjs/express-handler": "^2.0.0",
     "@rdfjs/namespace": "^2.0.0",
     "@types/clownface": "^2",
     "@types/rdfjs__environment": "^0.1.7",
