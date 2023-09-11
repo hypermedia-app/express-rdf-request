@@ -1,11 +1,10 @@
-import { describe, it } from 'mocha'
 import express, { Express } from 'express'
 import request from 'supertest'
 import { foaf, rdf, schema } from '@tpluscode/rdf-ns-builders'
 import { turtle } from '@tpluscode/rdf-string'
 import asyncMiddleware from 'middleware-async'
 import { expect } from 'chai'
-import { attach, resource } from '..'
+import { attach, resource } from '../index.js'
 
 describe('middleware', () => {
   let app: Express
